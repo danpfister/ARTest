@@ -19,14 +19,25 @@ using namespace std;
 using namespace cv;
 
 int main(int argc, const char * argv[]) {
+    if (argc < 2) {
+        cerr << "Error: Please provide a video file path as an argument." << endl;
+        return -1;
+    }
+
     CameraCalibration cc;
-    cc.calibrateCamera();
+    //cc.calibrateCamera();
     
     PoseEstimation pe;
     Markers m;
     
-    VideoCapture inputVideo;
-    inputVideo.open(0);
+    // Get the video file path from command-line arguments
+    string videoSource = argv[1]; 
+
+    VideoCapture inputVideo(videoSource);
+    if (!inputVideo.isOpened()) {
+        cerr << "Error: Could not open the camera or video file." << endl;
+        return -1;
+    }
     
     bool isTracking = false;
 
@@ -36,12 +47,12 @@ int main(int argc, const char * argv[]) {
         image.copyTo(image_copy);
 
         //绘制marker位置
-//        vector<int> ids;
-//        vector<vector<Point2f>> corners;
-//        aruco::detectMarkers(image, cc.dictionary, corners, ids);
-//        if (ids.size()>0) {
-//            aruco::drawDetectedMarkers(image_copy, corners, ids);
-//        }
+       vector<int> ids;
+       vector<vector<Point2f>> corners;
+       aruco::detectMarkers(image, cc.dictionary, corners, ids);
+       if (ids.size()>0) {
+           aruco::drawDetectedMarkers(image_copy, corners, ids);
+       }
 
         char key = (char) cv::waitKey(50);
         if (key == 27) break;
